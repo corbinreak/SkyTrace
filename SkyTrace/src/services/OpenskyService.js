@@ -65,12 +65,12 @@ export async function fetchFlightData() {
     );
 
   const rawData = JSON.parse(text);
-  console.log("A: Raw data object kes:", Object.keys(rawData));
-  console.log(
-    "B: rawData.states type/value:",
-    typeof rawData.states,
-    rawData.states,
-  );
+  //console.log("A: Raw data object kes:", Object.keys(rawData));
+  //console.log(
+  //"B: rawData.states type/value:",
+  //typeof rawData.states,
+  //rawData.states,
+  //);
 
   if (!rawData.states) {
     console.warn(
@@ -79,12 +79,11 @@ export async function fetchFlightData() {
     return [];
   }
 
-  console.log("C: rawData.states length:", rawData.states.length);
-  console.log(
-    "D: First 5 elements of rawData.states:",
-    rawData.states.slice(0, 5),
-  );
-
+  //console.log("C: rawData.states length:", rawData.states.length);
+  //console.log(
+  //  "D: First 5 elements of rawData.states:",
+  //  rawData.states.slice(0, 5),
+  //);
   function mapVectorToFlight(vector) {
     return {
       icao24: vector[0],
@@ -108,6 +107,7 @@ export async function fetchFlightData() {
   const formattedFlights = rawData.states
     .filter((vector) => vector[5] !== null && vector[6] !== null)
     .map(mapVectorToFlight);
-  console.log("E: Formatted flights length:", formattedFlights.length);
+  //console.log("E: Formatted flights length:", formattedFlights.length);
+  //console.log("F: First 5 formatted flights:", formattedFlights.slice(0, 5));
   return formattedFlights;
 }

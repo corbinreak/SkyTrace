@@ -11,7 +11,7 @@ function RadarMapContainer() {
     async function loadData() {
       try {
         const data = await fetchFlightData();
-        setFlights(data.states || []);
+        setFlights(data);
       } catch (err) {
         console.error("Error fetching flight data:", err);
       }
