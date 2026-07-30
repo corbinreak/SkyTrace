@@ -1,5 +1,6 @@
-import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
 import { useEffect, useState } from "react";
+import FlightMarker from "./FlightMarker.jsx";
 import { getAccessToken, fetchFlightData } from "../services/OpenskyService.js";
 import "../css/RadarMapContainer.css";
 import "leaflet/dist/leaflet.css";
@@ -12,11 +13,29 @@ function RadarMapContainer() {
       try {
         const data = await fetchFlightData();
         setFlights(data);
+        //  // if (data.length > 0) {
+        //     console.log(
+        //       "Updated flights at",
+        //       new Date().toLocaleTimeString(),
+        //       data[0]?.latitude,
+        //       data[0]?.longitude,
+        //     );
+        //   } else {
+        //     console.log(
+        //       "Updated flights at",
+        //       new Date().toLocaleTimeString(),
+        //       "- No flights found",
+        //     );
+        //  }
       } catch (err) {
         console.error("Error fetching flight data:", err);
       }
     }
     loadData();
+
+    const intervalId = setInterval(loadData, 10000); // Refresh every 10 seconds
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
 
   useEffect(() => {
@@ -34,9 +53,9 @@ function RadarMapContainer() {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={position}>
-        <Popup>Loveland, CO</Popup>
-      </Marker>
+      {flights.map((flight) => (
+        <FlightMarker key={flight.icao24} flight={flight} />
+      ))}
     </MapContainer>
   );
 }

@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const BASE_URL = import.meta.env.VITE_OPENSKY_BASE_URL || "";
 const CLIENT_ID = import.meta.env.VITE_OPENSKY_CLIENT_ID;
 const CLIENT_SECRET = import.meta.env.VITE_OPENSKY_CLIENT_SECRET;
@@ -51,33 +53,25 @@ export async function fetchFlightData() {
   const accessToken = await getAccessToken();
   const flightDataUrl = statesEndpoint();
 
-  const response = await fetch(flightDataUrl, {
+  const response = await axios.get(flightDataUrl, {
+    params: {
+      lamin: 37,
+      lamax: 41.0,
+      lomin: -109.05,
+      lomax: -102.05,
+    },
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      Accept: "application/json",
     },
   });
 
-  const text = await response.text();
-  if (!response.ok)
-    throw new Error(
-      `Failed to fetch flight data (${response.status}): ${text}`,
-    );
-
-  const rawData = JSON.parse(text);
+  const rawData = response.data;
   //console.log("A: Raw data object kes:", Object.keys(rawData));
   //console.log(
   //"B: rawData.states type/value:",
   //typeof rawData.states,
   //rawData.states,
   //);
-
-  if (!rawData.states) {
-    console.warn(
-      "Warning: rawData.states is undefined or null. Returning empty array.",
-    );
-    return [];
-  }
 
   //console.log("C: rawData.states length:", rawData.states.length);
   //console.log(
@@ -93,9 +87,9 @@ export async function fetchFlightData() {
       lastContact: vector[4],
       longitude: vector[5], // lng
       latitude: vector[6], // lat
-      baroAltitude: vector[7],
+      baroAltitude: vector[7] !== null ? Math.floor(vector[7] * 3.28084) : null, // barometric altitude in feet
       onGround: vector[8],
-      velocity: vector[9],
+      velocity: vector[9] !== null ? Math.floor(vector[9] * 1.94384) : null, // velocity in knots
       trueTrack: vector[10],
       verticalRate: vector[11],
       sensors: vector[12],
