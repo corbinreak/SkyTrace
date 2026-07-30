@@ -1,8 +1,31 @@
 import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
+import { useEffect, useState } from "react";
+import { getAccessToken, fetchFlightData } from "../services/OpenskyService.js";
 import "../css/RadarMapContainer.css";
 import "leaflet/dist/leaflet.css";
 
 function RadarMapContainer() {
+  const [flights, setFlights] = useState([]);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await fetchFlightData();
+        setFlights(data.states || []);
+      } catch (err) {
+        console.error("Error fetching flight data:", err);
+      }
+    }
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    if (flights) {
+      console.log("Flight data loaded:", flights);
+      console.log("Number of flights:", flights.length);
+    }
+  }, [flights]);
+
   const position = [40.3975, -105.0745]; // Base map for Loveland Co (My hometown)
 
   return (
